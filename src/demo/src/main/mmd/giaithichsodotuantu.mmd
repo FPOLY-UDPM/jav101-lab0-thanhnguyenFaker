@@ -1,0 +1,26 @@
+ sequenceDiagram
+     participant U as Browser / Client
+     participant C as Controller
+     participant S as Service Layer
+     participant R as Repository Layer
+     participant DB as Database
+    participant V as View / Template
+
+     U->>+C: HTTP Request (e.g., GET /products/1)
+    Note over C: Validate Request
+
+     C->>+S: getProductDetails(id)
+     Note over S: Process Business Logic
+
+     S->>+R: findById(id)
+     R->>+DB: SELECT * FROM products WHERE id = ?
+     DB-->>-R: Result Set / Records
+
+    R-->>-S: Product Entity
+     S-->>-C: Product DTO / Model
+
+     C->>+V: addAttribute("product", data)
+    Note over V: Render HTML Template
+     V-->>-C: Final HTML Content
+
+     C-->>-U: HTTP Response (200 OK)

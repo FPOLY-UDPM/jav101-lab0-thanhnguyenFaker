@@ -1,0 +1,36 @@
+sequenceDiagram
+     autonumber actor User as Người dùng
+     participant View as View (login.jsp)
+     participant Controller as Controller (LoginServlet)
+     participant Model as Model (UserService/DAO)
+    participant DB as Database
+    Note over User, View: Giai đoạn 1: Hiển thị trang đăng nhập
+     User->>View: Truy cập URL /login
+     View-->>User: Hiển thị form đăng nhập (doGet)
+
+     Note over User, DB: Giai đoạn 2: Thực hiện đăng nhập
+     User->>View: Nhập Username/Password & nhấn "Login"
+     View->>+Controller: Gửi HTTP POST (credentials)
+
+     Note right of Controller: doPost xử lý yêu cầu
+
+     Controller->>+Model: checkLogin(username, password)
+     Model->>+DB: SELECT * FROM users WHERE username = ?
+     DB-->>-Model: Trả về thông tin User (nếu có)
+
+     Note over Model: So khớp Password (BCrypt/Hash)
+
+     Model-->>-Controller: Trả về User object hoặc null
+
+     alt Đăng nhập thành công
+         Controller->>Controller: Tạo Session (HttpSession)
+         Controller->>Controller: Lưu thông tin User vào Session
+         Controller->>View: Redirect sang Dashboard (/home)
+        View-->>User: Hiển thị trang chủ thành công (200 OK)
+     else Đăng nhập thất bại
+         Controller->>Controller: Thiết lập Error Message (request.setAttribute)
+         Controller->>+View: Forward về lại login.jsp
+         View-->>-User: Hiển thị thông báo "Sai tài khoản/mật khẩu"
+     end
+
+     deactivate Controller
