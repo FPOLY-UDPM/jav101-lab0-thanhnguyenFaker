@@ -1,0 +1,26 @@
+ sequenceDiagram
+     autonumber
+     actor User as Browser (Trình duyệt)
+     participant C as Controller
+    participant S as Service (Business Logic)
+    participant R as Repository (Data Access)
+     participant DB as Database
+     participant V as View (Template Engine)
+
+     User->>+C: Gửi HTTP Request (vd: GET /products)
+     Note over C: Tiếp nhận & Kiểm tra tham số
+
+     C->>+S: Gọi Service xử lý (getProducts())
+
+     S->>+R: Yêu cầu truy vấn dữ liệu
+     R->>+DB: Thực thi SQL Query
+     DB-->>-R: Trả về ResultSet/Records
+     R-->>-S: Trả về List Entities (Java Objects)
+
+     Note over S: Xử lý logic nghiệp vụ/DTO
+     S-->>-C: Trả về kết quả sau xử lý
+
+     C->>+V: Đẩy dữ liệu vào Model & gọi View
+     Note over V: Render HTML với dữ liệu thực
+    V-->>-C: Trả về mã HTML hoàn chỉnh
+

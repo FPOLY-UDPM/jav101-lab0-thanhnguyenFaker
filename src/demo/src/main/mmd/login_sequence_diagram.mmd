@@ -1,0 +1,28 @@
+sequenceDiagram
+    autonumber
+    actor User as Người dùng (Browser)
+    participant C as LoginController
+    participant S as AuthService (Model/Service)
+    participant DB as Database
+    participant V as View (Login/Dashboard)
+
+    User->>+C: Nhập Username/Password & Nhấn Login
+    Note right of C: Nhận yêu cầu POST /login
+
+    C->>+S: authenticate(username, password)
+    Note over S: Kiểm tra logic nghiệp vụ
+
+    S->>+DB: findUserByUsername(username)
+    DB-->>-S: Trả về User Info (Password Hash)
+
+    alt Password Hợp lệ
+        S-->>C: Trả về Success + User Object
+        C->>+V: Chuyển hướng đến Dashboard (Success View)
+        V-->>-User: Hiển thị trang quản trị
+    else Password Sai hoặc Không tồn tại
+        S-->>-C: Trả về Error (Invalid Credentials)
+        C->>+V: Trả về trang Login với thông báo lỗi (Error View)
+        V-->>-User: Hiển thị "Sai tài khoản hoặc mật khẩu"
+    end
+    
+    C-->>-User: Kết thúc phiên làm việc
